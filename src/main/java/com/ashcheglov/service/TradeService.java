@@ -15,7 +15,8 @@ import java.math.BigDecimal;
 public interface TradeService {
 
     /**
-     * Records a trade, i.e. an operation with a given quantity of stocks.
+     * Records a trade, i.e. buys or sells a given quantity of stocks
+     * of some type at a given price.
      *
      * @param tradeType     a type of the operation
      * @param stockSymbol   a stock to perform the operation on
