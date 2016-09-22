@@ -1,10 +1,16 @@
 package com.ashcheglov.dao;
 
+import com.ashcheglov.domain.stock.Stock;
 import com.ashcheglov.domain.trade.Trade;
+import com.ashcheglov.domain.trade.TradeType;
 
-import java.util.Map;
-import java.util.TreeMap;
-import java.util.concurrent.atomic.AtomicLong;
+import java.time.LocalDateTime;
+import java.util.Set;
+import java.util.SortedSet;
+import java.util.TreeSet;
+
+import static java.util.Collections.synchronizedSortedSet;
+import static java.util.stream.Collectors.toSet;
 
 /**
  * @author Anton
@@ -12,18 +18,25 @@ import java.util.concurrent.atomic.AtomicLong;
  */
 public class TradeDaoImpl implements TradeDao {
 
-    private Map<Long, Trade> tradesStorage = new TreeMap<>();
-
-    AtomicLong idGenerator = new AtomicLong();
+    /**
+     * A database emulation
+     */
+    static SortedSet<Trade> tradesStorage = synchronizedSortedSet(new TreeSet<>());
 
     @Override
-    public void save(Trade trade) {
-        tradesStorage.put(idGenerator.incrementAndGet(), trade);
+    public boolean save(Trade trade) {
+        return tradesStorage.add(trade);
     }
 
     @Override
-    public Map<Long, Trade> getAll() {
-        return tradesStorage;
+    public Set<Trade> getByTypeAndStockAndPeriod(TradeType type, Stock stock,
+                                                 LocalDateTime from, LocalDateTime to) {
+        return tradesStorage.stream()
+                .filter(trade -> trade.getType().equals(type))
+                .filter(trade -> trade.getStock().equals(stock))
+                .filter(trade -> !trade.getTimeStamp().isBefore(from)
+                        && trade.getTimeStamp().isBefore(to))
+                .collect(toSet());
     }
 
 }

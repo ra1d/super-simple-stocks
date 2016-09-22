@@ -5,5 +5,8 @@ package com.ashcheglov.domain.trade;
  * @since 18.09.2016
  */
 public enum TradeType {
-    BUY
+
+    BUY,
+    SELL
+
 }
