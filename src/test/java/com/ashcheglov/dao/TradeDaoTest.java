@@ -18,6 +18,7 @@ import static com.ashcheglov.domain.trade.TradeType.SELL;
 import static java.math.BigDecimal.valueOf;
 import static java.time.LocalDateTime.now;
 import static java.util.Arrays.asList;
+import static java.util.Collections.singleton;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assume.assumeTrue;
@@ -63,18 +64,23 @@ public class TradeDaoTest {
     }
 
     @Test
-    public void shouldGetByTypeAndStockAndPeriod_FilterOutType() {
+    public void shouldFilterOutByType() {
         // given
-        Trade trade1 = new Trade(1L, BUY, stock1, 110L, valueOf(10), LocalDateTime.of(2011, 1, 1, 1, 1, 1));
-        Trade trade2 = new Trade(2L, SELL, stock1, 120L, valueOf(20), LocalDateTime.of(2011, 1, 1, 2, 2, 2));
-        Trade trade3 = new Trade(3L, BUY, stock1, 130L, valueOf(30), LocalDateTime.of(2011, 1, 1, 3, 3, 3));
+        Trade trade1 = new Trade(
+                1L, BUY, stock1, 110L, valueOf(10), LocalDateTime.of(2011, 1, 1, 1, 1, 1));
+        Trade trade2 = new Trade(
+                2L, SELL, stock1, 120L, valueOf(20), LocalDateTime.of(2011, 1, 1, 2, 2, 2));
+        Trade trade3 = new Trade(
+                3L, BUY, stock1, 130L, valueOf(30), LocalDateTime.of(2011, 1, 1, 3, 3, 3));
         tradesStorage.addAll(asList(trade1, trade2, trade3));
 
         assumeTrue("Test data not ready", tradesStorage.size() == 3);
 
         // when
-        Set<Trade> trades = tradeDao.getByTypeAndStockAndPeriod(BUY, stock1,
-                LocalDateTime.of(2011, 1, 1, 0, 0, 0), LocalDateTime.of(2011, 1, 1, 4, 4, 4));
+        Set<Trade> trades = tradeDao.getByTypeAndStockAndPeriod(
+                BUY, singleton(stock1),
+                LocalDateTime.of(2011, 1, 1, 0, 0, 0), LocalDateTime.of(2011, 1, 1, 4, 4, 4)
+        );
 
         // then
         assertEquals(2, trades.size());
@@ -82,18 +88,23 @@ public class TradeDaoTest {
     }
 
     @Test
-    public void shouldGetByTypeAndStockAndPeriod_FilterOutStock() {
+    public void shouldFilterOutByStock() {
         // given
-        Trade trade1 = new Trade(1L, BUY, stock1, 110L, valueOf(10), LocalDateTime.of(2011, 1, 1, 1, 1, 1));
-        Trade trade2 = new Trade(2L, BUY, stock2, 120L, valueOf(20), LocalDateTime.of(2011, 1, 1, 2, 2, 2));
-        Trade trade3 = new Trade(3L, BUY, stock1, 130L, valueOf(30), LocalDateTime.of(2011, 1, 1, 3, 3, 3));
+        Trade trade1 = new Trade(
+                1L, BUY, stock1, 110L, valueOf(10), LocalDateTime.of(2011, 1, 1, 1, 1, 1));
+        Trade trade2 = new Trade(
+                2L, BUY, stock2, 120L, valueOf(20), LocalDateTime.of(2011, 1, 1, 2, 2, 2));
+        Trade trade3 = new Trade(
+                3L, BUY, stock1, 130L, valueOf(30), LocalDateTime.of(2011, 1, 1, 3, 3, 3));
         tradesStorage.addAll(asList(trade1, trade2, trade3));
 
         assumeTrue("Test data not ready", tradesStorage.size() == 3);
 
         // when
-        Set<Trade> trades = tradeDao.getByTypeAndStockAndPeriod(BUY, stock1,
-                LocalDateTime.of(2011, 1, 1, 0, 0, 0), LocalDateTime.of(2011, 1, 1, 4, 4, 4));
+        Set<Trade> trades = tradeDao.getByTypeAndStockAndPeriod(
+                BUY, singleton(stock1),
+                LocalDateTime.of(2011, 1, 1, 0, 0, 0), LocalDateTime.of(2011, 1, 1, 4, 4, 4)
+        );
 
         // then
         assertEquals(2, trades.size());
@@ -101,22 +112,52 @@ public class TradeDaoTest {
     }
 
     @Test
-    public void shouldGetByTypeAndStockAndPeriod_FilterOutPeriod() {
+    public void shouldFilterOutByPeriod() {
         // given
-        Trade trade1 = new Trade(1L, BUY, stock1, 110L, valueOf(10), LocalDateTime.of(2011, 1, 1, 1, 1, 1));
-        Trade trade2 = new Trade(2L, BUY, stock1, 120L, valueOf(20), LocalDateTime.of(2011, 1, 1, 2, 2, 2));
-        Trade trade3 = new Trade(3L, BUY, stock1, 130L, valueOf(30), LocalDateTime.of(2011, 1, 1, 3, 3, 3));
+        Trade trade1 = new Trade(
+                1L, BUY, stock1, 110L, valueOf(10), LocalDateTime.of(2011, 1, 1, 1, 1, 1));
+        Trade trade2 = new Trade(
+                2L, BUY, stock1, 120L, valueOf(20), LocalDateTime.of(2011, 1, 1, 2, 2, 2));
+        Trade trade3 = new Trade(
+                3L, BUY, stock1, 130L, valueOf(30), LocalDateTime.of(2011, 1, 1, 3, 3, 3));
         tradesStorage.addAll(asList(trade1, trade2, trade3));
 
         assumeTrue("Test data not ready", tradesStorage.size() == 3);
 
         // when
-        Set<Trade> trades = tradeDao.getByTypeAndStockAndPeriod(BUY, stock1,
-                LocalDateTime.of(2011, 1, 1, 1, 1, 1), LocalDateTime.of(2011, 1, 1, 3, 3, 3));
+        Set<Trade> trades = tradeDao.getByTypeAndStockAndPeriod(
+                BUY, singleton(stock1),
+                LocalDateTime.of(2011, 1, 1, 1, 1, 1), LocalDateTime.of(2011, 1, 1, 3, 3, 3)
+        );
 
         // then
         assertEquals(2, trades.size());
         assertTrue(trades.containsAll(asList(trade1, trade2)));
+    }
+
+    @Test
+    public void shouldGetFor2Stocks_NoFiltering() {
+        // given
+        Trade trade1 = new Trade(
+                1L, BUY, stock1, 110L, valueOf(10), LocalDateTime.of(2011, 1, 1, 1, 1, 1));
+        Trade trade2 = new Trade(
+                2L, BUY, stock2, 120L, valueOf(20), LocalDateTime.of(2011, 1, 1, 2, 2, 2));
+        Trade trade3 = new Trade(
+                3L, BUY, stock1, 130L, valueOf(30), LocalDateTime.of(2011, 1, 1, 3, 3, 3));
+
+        tradesStorage.addAll(asList(trade1, trade2, trade3));
+
+        assumeTrue("Test data not ready", tradesStorage.size() == 3);
+
+        // when
+        Set<Trade> trades = tradeDao.getByTypeAndStockAndPeriod(
+                BUY, asList(stock1, stock2),
+                LocalDateTime.of(2011, 1, 1, 1, 1, 1), LocalDateTime.of(2011, 1, 1, 3, 3, 4)
+        );
+
+        // then
+        assertEquals(3, trades.size());
+        assertTrue(trades.containsAll(asList(trade1, trade2, trade3)));
     }
 
 }

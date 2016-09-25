@@ -11,12 +11,20 @@ import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.util.Collection;
+import java.util.Map;
 import java.util.Set;
 
 import static com.ashcheglov.domain.trade.TradeType.BUY;
+import static java.lang.Math.pow;
 import static java.math.BigDecimal.ROUND_HALF_UP;
 import static java.math.BigDecimal.ZERO;
 import static java.math.BigDecimal.valueOf;
+import static java.time.LocalDateTime.now;
+import static java.util.Collections.singleton;
+import static java.util.stream.Collectors.groupingBy;
+import static java.util.stream.Collectors.joining;
+import static java.util.stream.Collectors.toSet;
 
 /**
  * @author Anton
@@ -29,6 +37,11 @@ public class TradeServiceImpl implements TradeService {
      * @see java.math.BigDecimal#scale
      */
     static final int SCALE = 10;
+
+    /**
+     * A time horizon to calculate Volume Weighted Stock Price for (in minutes)
+     */
+    static final int VOL_WEIGHTED_STOCK_PRICE_PERIOD = 5;
 
     @Autowired
     private TradeDao tradeDao;
@@ -43,31 +56,61 @@ public class TradeServiceImpl implements TradeService {
     public Trade recordTrade(TradeType type, String stockSymbol,
                              long quantity, BigDecimal price) {
         Trade trade;
-        if (quantity > 0) {
+        if (quantity > 0 && price.compareTo(ZERO) > 0) {
             Stock stock = stockDao.getBySymbol(stockSymbol);
             trade = tradeFactory.newInstance(type, stock, quantity, price);
             tradeDao.save(trade);
         } else {
-            throw new IllegalArgumentException("Invalid quantity! Expected: > 1, actual: " + quantity);
+            throw new IllegalArgumentException(String.format(
+                    "Non-positive quantity or price! Quantity=[%s], price=[%s]",
+                    quantity, price));
         }
         return trade;
     }
 
     @Override
-    public BigDecimal calculateVolumeWeightedStockPrice(String stockSymbol,
-                                                        LocalDateTime from, LocalDateTime to) {
+    public BigDecimal calculateVolumeWeightedStockPrice(String stockSymbol) {
         Stock stock = stockDao.getBySymbol(stockSymbol);
-        Set<Trade> buyTrades = tradeDao.getByTypeAndStockAndPeriod(BUY, stock, from, to);
+        LocalDateTime to = now();
+        LocalDateTime from = to.minusMinutes(VOL_WEIGHTED_STOCK_PRICE_PERIOD);
+        Set<Trade> buyTrades = tradeDao.getByTypeAndStockAndPeriod(BUY, singleton(stock), from, to);
+        return calculateVolumeWeightedStockPrice(buyTrades);
+    }
 
-        BigDecimal tradedPricesTotal = buyTrades.stream()
+    @Override
+    public BigDecimal calculateAllShareIndex() {
+        Set<Stock> stocks = stockDao.getAll();
+        LocalDateTime to = now();
+        LocalDateTime from = to.minusMinutes(VOL_WEIGHTED_STOCK_PRICE_PERIOD);
+
+        Map<Stock, Set<Trade>> buyTradesByStock =
+                tradeDao.getByTypeAndStockAndPeriod(BUY, stocks, from, to).stream()
+                .collect(groupingBy(Trade::getStock, toSet()));
+
+        double volWeightStockPriceProduct = buyTradesByStock.values().stream()
+                .map(TradeServiceImpl::calculateVolumeWeightedStockPrice)
+                .reduce(BigDecimal::multiply)
+                .orElseThrow(() -> new IllegalStateException(String.format(
+                        "No trades meet the given criteria! From=[%s], to=[%s], stocks=[%s]",
+                        from, to,
+                        stocks.stream().map(Stock::toString).collect(joining(", "))
+                )))
+                .doubleValue();
+
+        return valueOf(pow(volWeightStockPriceProduct, (1.0 / buyTradesByStock.size())));
+    }
+
+    private static BigDecimal calculateVolumeWeightedStockPrice(Collection<Trade> trades) {
+        BigDecimal tradedPricesTotal = trades.stream()
                 .map(trade -> {
                     BigDecimal price = trade.getPrice();
                     BigDecimal quantity = valueOf(trade.getQuantity());
                     return (price.multiply(quantity));
                 })
-                .reduce(ZERO, BigDecimal::add);
+                .reduce(BigDecimal::add)
+                .orElseThrow(() -> new IllegalArgumentException("No trades were provided!"));
 
-        BigDecimal totalQuantity = valueOf(buyTrades.stream()
+        BigDecimal totalQuantity = valueOf(trades.stream()
                 .mapToLong(Trade::getQuantity).sum());
 
         return tradedPricesTotal.divide(totalQuantity, SCALE, ROUND_HALF_UP);

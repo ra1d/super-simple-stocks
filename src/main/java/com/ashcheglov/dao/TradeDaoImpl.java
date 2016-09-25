@@ -5,6 +5,7 @@ import com.ashcheglov.domain.trade.Trade;
 import com.ashcheglov.domain.trade.TradeType;
 
 import java.time.LocalDateTime;
+import java.util.Collection;
 import java.util.Set;
 import java.util.SortedSet;
 import java.util.TreeSet;
@@ -29,11 +30,11 @@ public class TradeDaoImpl implements TradeDao {
     }
 
     @Override
-    public Set<Trade> getByTypeAndStockAndPeriod(TradeType type, Stock stock,
+    public Set<Trade> getByTypeAndStockAndPeriod(TradeType type, Collection<Stock> stocks,
                                                  LocalDateTime from, LocalDateTime to) {
         return tradesStorage.stream()
-                .filter(trade -> trade.getType().equals(type))
-                .filter(trade -> trade.getStock().equals(stock))
+                .filter(trade -> type.equals(trade.getType()))
+                .filter(trade -> stocks.contains(trade.getStock()))
                 .filter(trade -> !trade.getTimeStamp().isBefore(from)
                         && trade.getTimeStamp().isBefore(to))
                 .collect(toSet());

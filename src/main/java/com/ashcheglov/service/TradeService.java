@@ -4,7 +4,6 @@ import com.ashcheglov.domain.trade.Trade;
 import com.ashcheglov.domain.trade.TradeType;
 
 import java.math.BigDecimal;
-import java.time.LocalDateTime;
 
 /**
  * Assumptions:
@@ -12,7 +11,7 @@ import java.time.LocalDateTime;
  *   is per one stock;
  * - for the purpose of Volume Weighted Stock Price calculation,
  *   only bought stocks are taken into account
- *   @see TradeType#BUY
+ *   @see TradeType#BUY;
  *
  * @author Anton
  * @since 18.09.2016
@@ -33,15 +32,20 @@ public interface TradeService {
                       long quantity, BigDecimal price);
 
     /**
-     * Calculates Volume Weighted Stock Price based on trades in a given period
-     * for a given stock
+     * Calculates Volume Weighted Stock Price of a stock
+     * based on trades in past 5 minutes.
      *
      * @param stockSymbol   a stock to perform the operation on
-     * @param from          the beginning of a period (inclusive)
-     * @param to            the end of a period (exclusive)
      * @return              Volume Weighted Stock Price
      */
-    BigDecimal calculateVolumeWeightedStockPrice(String stockSymbol,
-                                                 LocalDateTime from, LocalDateTime to);
+    BigDecimal calculateVolumeWeightedStockPrice(String stockSymbol);
+
+    /**
+     * Calculates the GBCE All Share Index based on trades
+     * in past 5 minutes for all the existing stocks.
+     *
+     * @return All Share Index
+     */
+    BigDecimal calculateAllShareIndex();
 
 }

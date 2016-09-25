@@ -3,6 +3,7 @@ package com.ashcheglov.domain.stock;
 import java.math.BigDecimal;
 
 /**
+ * TODO equals, hashCode?
  * @author Anton
  * @since 18.09.2016
  */
