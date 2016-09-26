@@ -5,14 +5,16 @@ import org.junit.Test;
 import java.math.BigDecimal;
 
 import static com.ashcheglov.domain.stock.StockType.COMMON;
+import static java.math.BigDecimal.valueOf;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotEquals;
 
 public class CommonStockTest {
 
-    private BigDecimal lastDividend = BigDecimal.valueOf(8);
-    private BigDecimal parValue = BigDecimal.valueOf(100);
+    private BigDecimal lastDividend = valueOf(8);
+    private BigDecimal parValue = valueOf(100);
 
-    private CommonStock stock = new CommonStock("POP", lastDividend, parValue);
+    private BaseStock stock = new CommonStock("POP", lastDividend, parValue);
 
     @Test
     public void shouldReturnCommonType() {
@@ -20,9 +22,23 @@ public class CommonStockTest {
     }
 
     @Test
+    public void shouldBeEqual() {
+        BaseStock stock1 = new CommonStock("ST1", valueOf(1), valueOf(11));
+        BaseStock stock2 = new CommonStock("ST1", valueOf(2), valueOf(22));
+        assertEquals(stock1, stock2);
+    }
+
+    @Test
+    public void shouldBeUnequal() {
+        BaseStock stock1 = new CommonStock("ST1", valueOf(1), valueOf(11));
+        BaseStock stock2 = new CommonStock("ST2", valueOf(1), valueOf(11));
+        assertNotEquals(stock1, stock2);
+    }
+
+    @Test
     public void shouldCalculateDividendYield() {
         // given
-        BigDecimal price = BigDecimal.valueOf(50);
+        BigDecimal price = valueOf(50);
 
         // when
         BigDecimal dividendYield = stock.calculateDividendYield(price);
@@ -34,7 +50,7 @@ public class CommonStockTest {
     @Test
     public void shouldCalculatePERatio() {
         // given
-        BigDecimal price = BigDecimal.valueOf(50);
+        BigDecimal price = valueOf(50);
 
         // when
         BigDecimal peRatio = stock.calculatePERatio(price);

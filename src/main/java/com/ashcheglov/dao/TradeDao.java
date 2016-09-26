@@ -31,7 +31,7 @@ public interface TradeDao {
      * @param to        the end of a period (exclusive) to retrieve trades for
      * @return      all the trades that meet the given conditions
      */
-    Set<Trade> getByTypeAndStockAndPeriod(TradeType type, Collection<Stock> stocks,
+    Set<Trade> getByTypeAndStockAndPeriod(TradeType type, Collection<? extends Stock> stocks,
                                           LocalDateTime from, LocalDateTime to);
 
 }

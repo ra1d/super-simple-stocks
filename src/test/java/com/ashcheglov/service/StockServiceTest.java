@@ -1,7 +1,7 @@
 package com.ashcheglov.service;
 
 import com.ashcheglov.dao.StockDao;
-import com.ashcheglov.domain.stock.Stock;
+import com.ashcheglov.domain.stock.BaseStock;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -18,7 +18,7 @@ import static org.mockito.Mockito.when;
 public class StockServiceTest {
 
     @Mock
-    private Stock stock;
+    private BaseStock stock;
 
     @Mock
     private StockDao stockDao;

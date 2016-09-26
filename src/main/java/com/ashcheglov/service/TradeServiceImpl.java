@@ -2,6 +2,7 @@ package com.ashcheglov.service;
 
 import com.ashcheglov.dao.StockDao;
 import com.ashcheglov.dao.TradeDao;
+import com.ashcheglov.domain.stock.BaseStock;
 import com.ashcheglov.domain.stock.Stock;
 import com.ashcheglov.domain.trade.Trade;
 import com.ashcheglov.domain.trade.TradeFactory;
@@ -79,7 +80,7 @@ public class TradeServiceImpl implements TradeService {
 
     @Override
     public BigDecimal calculateAllShareIndex() {
-        Set<Stock> stocks = stockDao.getAll();
+        Set<BaseStock> stocks = stockDao.getAll();
         LocalDateTime to = now();
         LocalDateTime from = to.minusMinutes(VOL_WEIGHTED_STOCK_PRICE_PERIOD);
 
@@ -92,9 +93,7 @@ public class TradeServiceImpl implements TradeService {
                 .reduce(BigDecimal::multiply)
                 .orElseThrow(() -> new IllegalStateException(String.format(
                         "No trades meet the given criteria! From=[%s], to=[%s], stocks=[%s]",
-                        from, to,
-                        stocks.stream().map(Stock::toString).collect(joining(", "))
-                )))
+                        from, to, getStockSymbols(stocks))))
                 .doubleValue();
 
         return valueOf(pow(volWeightStockPriceProduct, (1.0 / buyTradesByStock.size())));
@@ -114,6 +113,12 @@ public class TradeServiceImpl implements TradeService {
                 .mapToLong(Trade::getQuantity).sum());
 
         return tradedPricesTotal.divide(totalQuantity, SCALE, ROUND_HALF_UP);
+    }
+
+    private static String getStockSymbols(Collection<BaseStock> stocks) {
+        return stocks.stream()
+                .map(BaseStock::getSymbol)
+                .collect(joining(", "));
     }
 
 }

@@ -2,6 +2,7 @@ package com.ashcheglov.service;
 
 import com.ashcheglov.dao.StockDao;
 import com.ashcheglov.dao.TradeDao;
+import com.ashcheglov.domain.stock.BaseStock;
 import com.ashcheglov.domain.stock.Stock;
 import com.ashcheglov.domain.trade.Trade;
 import com.ashcheglov.domain.trade.TradeFactory;
@@ -32,7 +33,6 @@ import static java.time.LocalDateTime.now;
 import static java.time.temporal.ChronoUnit.MILLIS;
 import static java.util.Arrays.asList;
 import static java.util.Collections.emptySet;
-import static java.util.Collections.singleton;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
@@ -65,10 +65,10 @@ public class TradeServiceTest {
     private Trade trade5;
 
     @Mock
-    private Stock stock1;
+    private BaseStock stock1;
 
     @Mock
-    private Stock stock2;
+    private BaseStock stock2;
 
     @Mock
     private TradeFactory tradeFactory;
@@ -217,7 +217,7 @@ public class TradeServiceTest {
 
         when(stockDao.getBySymbol(stockSymbol)).thenReturn(stock1);
         when(tradeDao.getByTypeAndStockAndPeriod(
-                eq(BUY), eq(singleton(stock1)), any(LocalDateTime.class), any(LocalDateTime.class)))
+                any(TradeType.class), any(), any(LocalDateTime.class), any(LocalDateTime.class)))
                 .thenReturn(new HashSet<>(asList(trade1, trade2, trade3)));
 
         // when
@@ -226,7 +226,11 @@ public class TradeServiceTest {
 
         // then
         verify(tradeDao).getByTypeAndStockAndPeriod(
-                eq(BUY), eq(singleton(stock1)), fromCaptor.capture(), toCaptor.capture());
+                eq(BUY), stockCaptor.capture(), fromCaptor.capture(), toCaptor.capture());
+
+        Collection<Stock> capturedStocks = stockCaptor.getValue();
+        assertEquals(1, capturedStocks.size());
+        assertTrue(capturedStocks.contains(stock1));
 
         assertTrue(abs(MILLIS.between(from, fromCaptor.getValue())) < 50);
         assertTrue(abs(MILLIS.between(to, toCaptor.getValue())) < 50);
@@ -250,7 +254,11 @@ public class TradeServiceTest {
 
         // then IllegalArgumentException expected
         verify(tradeDao).getByTypeAndStockAndPeriod(
-                eq(BUY), eq(singleton(stock1)), fromCaptor.capture(), toCaptor.capture());
+                eq(BUY), stockCaptor.capture(), fromCaptor.capture(), toCaptor.capture());
+
+        Collection<Stock> capturedStocks = stockCaptor.getValue();
+        assertEquals(1, capturedStocks.size());
+        assertTrue(capturedStocks.contains(stock1));
 
         assertTrue(abs(MILLIS.between(from, fromCaptor.getValue())) < 50);
         assertTrue(abs(MILLIS.between(to, toCaptor.getValue())) < 50);
@@ -264,8 +272,7 @@ public class TradeServiceTest {
 
         when(stockDao.getAll()).thenReturn(new HashSet<>(asList(stock1, stock2)));
         when(tradeDao.getByTypeAndStockAndPeriod(
-                eq(BUY), any(), any(LocalDateTime.class),
-                any(LocalDateTime.class)))
+                any(TradeType.class), any(), any(LocalDateTime.class), any(LocalDateTime.class)))
                 .thenReturn(new HashSet<>(asList(trade1, trade2, trade3, trade4, trade5)));
 
         // when
@@ -291,7 +298,7 @@ public class TradeServiceTest {
         // given
         when(stockDao.getAll()).thenReturn(new HashSet<>(asList(stock1, stock2)));
         when(tradeDao.getByTypeAndStockAndPeriod(
-                eq(BUY), any(), any(LocalDateTime.class), any(LocalDateTime.class)))
+                any(TradeType.class), any(), any(LocalDateTime.class), any(LocalDateTime.class)))
                 .thenReturn(emptySet());
 
         // when

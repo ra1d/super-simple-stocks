@@ -2,26 +2,22 @@ package com.ashcheglov.domain.stock;
 
 import java.math.BigDecimal;
 
+import static com.ashcheglov.domain.stock.StockType.PREFERRED;
+
 /**
- * TODO equals, hashCode?
+ * A preferred stock.
+ *
  * @author Anton
  * @since 18.09.2016
  */
-public class PreferredStock extends CommonStock implements Stock {
+public class PreferredStock extends BaseStock {
 
-    private final StockType type;
     private final BigDecimal fixedDividend;
 
     public PreferredStock(String symbol, BigDecimal lastDividend,
                           BigDecimal fixedDividend, BigDecimal parValue) {
-        super(symbol, lastDividend, parValue);
-        this.type = StockType.PREFERRED;
+        super(symbol, PREFERRED, lastDividend, parValue);
         this.fixedDividend = fixedDividend;
-    }
-
-    @Override
-    public StockType getType() {
-        return type;
     }
 
     public BigDecimal getFixedDividend() {

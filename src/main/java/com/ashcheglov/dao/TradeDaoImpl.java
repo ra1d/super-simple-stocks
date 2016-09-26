@@ -30,7 +30,7 @@ public class TradeDaoImpl implements TradeDao {
     }
 
     @Override
-    public Set<Trade> getByTypeAndStockAndPeriod(TradeType type, Collection<Stock> stocks,
+    public Set<Trade> getByTypeAndStockAndPeriod(TradeType type, Collection<? extends Stock> stocks,
                                                  LocalDateTime from, LocalDateTime to) {
         return tradesStorage.stream()
                 .filter(trade -> type.equals(trade.getType()))

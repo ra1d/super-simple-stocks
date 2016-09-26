@@ -1,7 +1,7 @@
 package com.ashcheglov;
 
 /**
- * Hello world!
+ * Welcome to the Global Beverage Corporation Exchange!
  */
 public class StockMarket {
 

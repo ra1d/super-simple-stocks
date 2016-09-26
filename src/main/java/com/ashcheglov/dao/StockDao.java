@@ -1,6 +1,6 @@
 package com.ashcheglov.dao;
 
-import com.ashcheglov.domain.stock.Stock;
+import com.ashcheglov.domain.stock.BaseStock;
 
 import java.util.Set;
 
@@ -16,13 +16,13 @@ public interface StockDao {
      * @param stockSymbol   a stock symbol
      * @return              a stock with the given symbol
      */
-    Stock getBySymbol(String stockSymbol);
+    BaseStock getBySymbol(String stockSymbol);
 
     /**
      * Finds all existing stocks
      *
      * @return all existing stocks
      */
-    Set<Stock> getAll();
+    Set<BaseStock> getAll();
 
 }
