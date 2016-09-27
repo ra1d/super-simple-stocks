@@ -33,20 +33,20 @@ public class GBCEIntegrationTest {
 
     @Test
     public void shouldCalculateDividendYield() {
-        BigDecimal popDividendYield = gbceFacade.calculateDividendYield("POP", valueOf(100.0));
+        BigDecimal popDividendYield = gbceFacade.calculateDividendYield("POP", valueOf(100));
         assertEqualsScaled(valueOf(0.08), popDividendYield);
 
-        BigDecimal ginDividendYield = gbceFacade.calculateDividendYield("GIN", valueOf(10.0));
+        BigDecimal ginDividendYield = gbceFacade.calculateDividendYield("GIN", valueOf(10));
         assertEqualsScaled(valueOf(0.2), ginDividendYield);
     }
 
     @Test
     public void shouldCalculatePERatio() {
-        BigDecimal popPERatio = gbceFacade.calculatePERatio("POP", valueOf(80.0));
-        assertEqualsScaled(valueOf(10.0), popPERatio);
+        BigDecimal popPERatio = gbceFacade.calculatePERatio("POP", valueOf(80));
+        assertEqualsScaled(valueOf(10), popPERatio);
 
-        BigDecimal ginPERatio = gbceFacade.calculatePERatio("GIN", valueOf(100.0));
-        assertEqualsScaled(valueOf(50.0), ginPERatio);
+        BigDecimal ginPERatio = gbceFacade.calculatePERatio("GIN", valueOf(100));
+        assertEqualsScaled(valueOf(50), ginPERatio);
     }
 
     @Test
