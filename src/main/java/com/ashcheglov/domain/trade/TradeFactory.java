@@ -1,6 +1,7 @@
 package com.ashcheglov.domain.trade;
 
 import com.ashcheglov.domain.stock.Stock;
+import org.springframework.stereotype.Component;
 
 import java.math.BigDecimal;
 import java.util.concurrent.atomic.AtomicLong;
@@ -8,9 +9,12 @@ import java.util.concurrent.atomic.AtomicLong;
 import static java.time.LocalDateTime.now;
 
 /**
+ * New trades must be created via this factory.
+ *
  * @author Anton
  * @since 18.09.2016
  */
+@Component
 public class TradeFactory {
 
     private static AtomicLong idGenerator = new AtomicLong();

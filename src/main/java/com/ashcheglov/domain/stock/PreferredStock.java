@@ -10,7 +10,8 @@ import static com.ashcheglov.domain.stock.StockType.PREFERRED;
  * @author Anton
  * @since 18.09.2016
  */
-public class PreferredStock extends BaseStock {
+public class PreferredStock
+        extends BaseStock implements Stock {
 
     private final BigDecimal fixedDividend;
 

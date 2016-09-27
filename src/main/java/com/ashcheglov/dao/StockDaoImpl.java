@@ -3,6 +3,7 @@ package com.ashcheglov.dao;
 import com.ashcheglov.domain.stock.BaseStock;
 import com.ashcheglov.domain.stock.CommonStock;
 import com.ashcheglov.domain.stock.PreferredStock;
+import org.springframework.stereotype.Repository;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -19,6 +20,7 @@ import static java.util.Collections.synchronizedSet;
  * @author Anton
  * @since 26.09.2016
  */
+@Repository
 public class StockDaoImpl implements StockDao {
 
     /**
@@ -37,7 +39,8 @@ public class StockDaoImpl implements StockDao {
     public BaseStock getBySymbol(String stockSymbol) {
         return stocksStorage.stream()
                 .filter(stock -> stock.getSymbol().equals(stockSymbol))
-                .findAny().get();
+                .findAny().orElseThrow(() -> new IllegalArgumentException(
+                        String.format("No such stock found [%s]!", stockSymbol)));
     }
 
     @Override

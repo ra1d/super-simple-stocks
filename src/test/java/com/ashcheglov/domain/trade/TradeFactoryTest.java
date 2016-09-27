@@ -19,7 +19,8 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
 /**
- * This test appears to be of integration nature.
+ * This test is not a pure unit test as it checks not only
+ * TradeFactory but also the Trade's internal logic.
  */
 @RunWith(MockitoJUnitRunner.class)
 public class TradeFactoryTest {
@@ -46,7 +47,7 @@ public class TradeFactoryTest {
 
         LocalDateTime tradeTimeStamp = trade.getTimeStamp();
         assertNotNull(tradeTimeStamp);
-        assertTrue(tradeTimeStamp.until(now(), MILLIS) < 1000);
+        assertTrue(tradeTimeStamp.until(now(), MILLIS) < 100);
     }
 
     @Test
@@ -61,6 +62,9 @@ public class TradeFactoryTest {
         Trade trade2 = tradeFactory.newInstance(SELL, stock, quantity, price);
 
         // then
+        assertEquals(1, trade1.getId());
+        assertEquals(2, trade2.getId());
+
         assertEquals(SELL, trade1.getType());
         assertEquals(stock, trade1.getStock());
         assertEquals(quantity, trade1.getQuantity());

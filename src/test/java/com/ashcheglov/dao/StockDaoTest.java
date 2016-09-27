@@ -33,7 +33,7 @@ public class StockDaoTest {
     }
 
     @Test
-    public void shouldGetBySymbol() throws Exception {
+    public void shouldGetBySymbol() {
         // given
         String symbol = "TEST";
         when(stock1.getSymbol()).thenReturn(symbol);
@@ -48,8 +48,19 @@ public class StockDaoTest {
         assertEquals(PREFERRED, stock.getType());
     }
 
+    @Test(expected = IllegalArgumentException.class)
+    public void shouldNotGetBySymbol_NoSuchStock() {
+        // given
+        String symbol = "TEST";
+
+        // when
+        BaseStock stock = stockDao.getBySymbol(symbol);
+
+        // then IllegalArgumentException expected
+    }
+
     @Test
-    public void shouldGetAll() throws Exception {
+    public void shouldGetAll() {
         // given
         stocksStorage.add(stock1);
         stocksStorage.add(stock2);

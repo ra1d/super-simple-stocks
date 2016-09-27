@@ -3,6 +3,7 @@ package com.ashcheglov.dao;
 import com.ashcheglov.domain.stock.Stock;
 import com.ashcheglov.domain.trade.Trade;
 import com.ashcheglov.domain.trade.TradeType;
+import org.springframework.stereotype.Repository;
 
 import java.time.LocalDateTime;
 import java.util.Collection;
@@ -17,6 +18,7 @@ import static java.util.stream.Collectors.toSet;
  * @author Anton
  * @since 20.09.2016
  */
+@Repository
 public class TradeDaoImpl implements TradeDao {
 
     /**

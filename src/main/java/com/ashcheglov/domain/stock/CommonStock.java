@@ -10,7 +10,8 @@ import static com.ashcheglov.domain.stock.StockType.COMMON;
  * @author Anton
  * @since 17.09.2016
  */
-public class CommonStock extends BaseStock {
+public class CommonStock
+        extends BaseStock implements Stock {
 
     public CommonStock(String symbol, BigDecimal lastDividend, BigDecimal parValue) {
         super(symbol, COMMON, lastDividend, parValue);

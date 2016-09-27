@@ -37,12 +37,12 @@ public class TradeServiceImpl implements TradeService {
     /**
      * @see java.math.BigDecimal#scale
      */
-    static final int SCALE = 10;
+    public static final int SCALE = 10;
 
     /**
      * A time horizon to calculate Volume Weighted Stock Price for (in minutes)
      */
-    static final int VOL_WEIGHTED_STOCK_PRICE_PERIOD = 5;
+    public static final int VOL_WEIGHTED_STOCK_PRICE_PERIOD = 5;
 
     @Autowired
     private TradeDao tradeDao;
